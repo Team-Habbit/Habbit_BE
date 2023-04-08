@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "aws"
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: ${BUCKET_NAME}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
