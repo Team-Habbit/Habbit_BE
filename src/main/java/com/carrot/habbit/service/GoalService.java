@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.carrot.habbit.domain.model.Category;
 import com.carrot.habbit.domain.model.Goal;
 import com.carrot.habbit.domain.repository.CategoryRepository;
+import com.carrot.habbit.domain.repository.CertificationRepository;
 import com.carrot.habbit.domain.repository.GoalRepository;
 import com.carrot.habbit.dto.GoalCreateRequestDto;
 import com.carrot.habbit.dto.GoalFindResponseDto;
@@ -24,6 +25,7 @@ public class GoalService {
 
 	private final GoalRepository goalRepository;
 	private final CategoryRepository categoryRepository;
+	private final CertificationRepository certificationRepository;
 
 	public void createGoal(GoalCreateRequestDto request) {
 		Category category = categoryRepository.findByCategoryName(request.getCategoryName())
@@ -41,16 +43,27 @@ public class GoalService {
 		goalRepository.save(goal);
 	}
 
-	private LocalDate stringToLocalDate(String date) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		return LocalDate.parse(date, formatter);
-	}
-
 	public GoalFindResponseDto findGoal(Long goalId) {
-		Goal goal = goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
+		Goal goal = findById(goalId);
 		return GoalFindResponseDto.builder()
 			.goalName(goal.getGoalName())
 			.goalPercent(goal.getGoalPercent())
+			.weekCount(findByNowDateBetweenAWeek(goal))
 			.build();
+	}
+
+	public Goal findById(Long goalId) {
+		return goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
+	}
+
+	private int findByNowDateBetweenAWeek(Goal goal) {
+		LocalDate nowDate = LocalDate.now();
+		return certificationRepository.findByGoalAndSubmissionDateBetween(
+			goal, nowDate.minusWeeks(1), nowDate).size();
+	}
+
+	private LocalDate stringToLocalDate(String date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		return LocalDate.parse(date, formatter);
 	}
 }

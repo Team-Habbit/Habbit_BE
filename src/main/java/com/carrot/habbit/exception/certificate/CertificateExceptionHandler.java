@@ -11,12 +11,6 @@ import com.carrot.habbit.exception.ErrorMessage;
 @RestControllerAdvice(basePackageClasses = CertificationController.class)
 public class CertificateExceptionHandler {
 
-	@ExceptionHandler(NotFoundGoalException.class)
-	public ResponseEntity<ErrorMessage> notFoundGoalException(NotFoundGoalException e) {
-		return ResponseEntity.badRequest()
-			.body(ErrorMessage.of(e, HttpStatus.BAD_REQUEST));
-	}
-
 	@ExceptionHandler(NotFoundCertificationException.class)
 	public ResponseEntity<ErrorMessage> notFoundCertificationException(NotFoundCertificationException e) {
 		return ResponseEntity.badRequest()

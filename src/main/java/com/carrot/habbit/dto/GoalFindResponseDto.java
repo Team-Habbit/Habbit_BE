@@ -17,4 +17,6 @@ public class GoalFindResponseDto {
 	private String goalName;
 
 	private double goalPercent;
+
+	private int weekCount;
 }

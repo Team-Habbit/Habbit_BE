@@ -30,8 +30,8 @@ public class GoalController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@GetMapping("/name/{goalId}")
-	public ResponseEntity<GoalFindResponseDto> getGoalName(
+	@GetMapping("/{goalId}")
+	public ResponseEntity<GoalFindResponseDto> getGoal(
 		@PathVariable Long goalId
 	) {
 		return ResponseEntity.ok().body(goalService.findGoal(goalId));

@@ -13,12 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.carrot.habbit.domain.model.Certification;
 import com.carrot.habbit.domain.model.Goal;
 import com.carrot.habbit.domain.repository.CertificationRepository;
-import com.carrot.habbit.domain.repository.GoalRepository;
 import com.carrot.habbit.dto.CertificatePhotoUrlRequestDto;
 import com.carrot.habbit.dto.S3FileDto;
 import com.carrot.habbit.exception.certificate.AlreadyCertificationException;
 import com.carrot.habbit.exception.certificate.NotFoundCertificationException;
-import com.carrot.habbit.exception.certificate.NotFoundGoalException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CertificationService {
 
-	private final GoalRepository goalRepository;
+	private final GoalService goalService;
 	private final CertificationRepository certificationRepository;
 	private final FileUploadService fileUploadService;
 
@@ -37,7 +35,7 @@ public class CertificationService {
 		if (optionalCert.isPresent()) {
 			throw new AlreadyCertificationException("이미 등록한 목표가 존재합니다.");
 		}
-		Goal goal = goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
+		Goal goal = goalService.findById(goalId);
 
 		List<S3FileDto> s3FileDtos = fileUploadService.uploadFiles(goal.getGoalName(), multipartFiles);
 
@@ -46,13 +44,13 @@ public class CertificationService {
 		Certification certification = Certification.of(goal, uploadFileUrl);
 
 		goal.setCurrentCount(goal.getCurrentCount() + 1);
-		double newPercent = Math.round((double) goal.getCurrentCount() / goal.getGoalCount() * 100) / 100.0;
+		double newPercent = Math.round((double)goal.getCurrentCount() / goal.getGoalCount() * 100) / 100.0;
 		goal.setGoalPercent(newPercent);
 		certificationRepository.save(certification);
 	}
 
 	public List<String> getCertifiedDays(Long goalId) {
-		Goal goal = goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
+		Goal goal = goalService.findById(goalId);
 		List<Certification> certifications = certificationRepository.findAllByGoal(goal);
 		return certifications.stream().map(i -> localDateToString(i.getSubmissionDate())).collect(Collectors.toList());
 	}
