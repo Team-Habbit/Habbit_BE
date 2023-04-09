@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carrot.habbit.dto.GoalCreateRequestDto;
-import com.carrot.habbit.dto.GoalNameFindResponseDto;
-import com.carrot.habbit.dto.GoalPercentFindResponseDto;
+import com.carrot.habbit.dto.GoalFindResponseDto;
 import com.carrot.habbit.service.GoalService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,17 +31,9 @@ public class GoalController {
 	}
 
 	@GetMapping("/name/{goalId}")
-	public ResponseEntity<GoalNameFindResponseDto> getGoalName(
+	public ResponseEntity<GoalFindResponseDto> getGoalName(
 		@PathVariable Long goalId
 	) {
-		return ResponseEntity.ok().body(goalService.findGoalName(goalId));
+		return ResponseEntity.ok().body(goalService.findGoal(goalId));
 	}
-
-	@GetMapping("/percent/{goalId}")
-	public ResponseEntity<GoalPercentFindResponseDto> getGoalPercent(
-		@PathVariable Long goalId
-	) {
-		return ResponseEntity.ok().body(goalService.findGoalPercent(goalId));
-	}
-
 }

@@ -13,6 +13,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class GoalNameFindResponseDto {
+public class GoalFindResponseDto {
 	private String goalName;
+
+	private double goalPercent;
 }

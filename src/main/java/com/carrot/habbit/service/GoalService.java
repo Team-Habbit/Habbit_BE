@@ -12,8 +12,7 @@ import com.carrot.habbit.domain.model.Goal;
 import com.carrot.habbit.domain.repository.CategoryRepository;
 import com.carrot.habbit.domain.repository.GoalRepository;
 import com.carrot.habbit.dto.GoalCreateRequestDto;
-import com.carrot.habbit.dto.GoalNameFindResponseDto;
-import com.carrot.habbit.dto.GoalPercentFindResponseDto;
+import com.carrot.habbit.dto.GoalFindResponseDto;
 import com.carrot.habbit.exception.goal.NotFoundCategoryException;
 import com.carrot.habbit.exception.goal.NotFoundGoalException;
 
@@ -47,16 +46,10 @@ public class GoalService {
 		return LocalDate.parse(date, formatter);
 	}
 
-	public GoalNameFindResponseDto findGoalName(Long goalId) {
+	public GoalFindResponseDto findGoal(Long goalId) {
 		Goal goal = goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
-		return GoalNameFindResponseDto.builder()
+		return GoalFindResponseDto.builder()
 			.goalName(goal.getGoalName())
-			.build();
-	}
-
-	public GoalPercentFindResponseDto findGoalPercent(Long goalId) {
-		Goal goal = goalRepository.findById(goalId).orElseThrow(() -> new NotFoundGoalException("목표 정보를 찾을 수 없습니다."));
-		return GoalPercentFindResponseDto.builder()
 			.goalPercent(goal.getGoalPercent())
 			.build();
 	}
