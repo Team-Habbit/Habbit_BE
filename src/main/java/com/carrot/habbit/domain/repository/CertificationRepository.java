@@ -14,5 +14,8 @@ public interface CertificationRepository extends JpaRepository<Certification, Lo
 
 	Optional<Certification> findBySubmissionDate(LocalDate targetDate);
 
+	Optional<Certification> findByGoalAndSubmissionDate(Goal goal, LocalDate targetDate);
+
+
 	List<Certification> findByGoalAndSubmissionDateBetween(Goal goal, LocalDate startDate, LocalDate endDate);
 }

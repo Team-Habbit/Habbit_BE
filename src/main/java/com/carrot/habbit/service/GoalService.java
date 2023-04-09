@@ -51,7 +51,7 @@ public class GoalService {
 
 	public GoalFindResponseDto findGoal(Long goalId) {
 		Goal goal = findById(goalId);
-		Optional<Certification> optionalCert = certificationRepository.findBySubmissionDate(LocalDate.now());
+		Optional<Certification> optionalCert = certificationRepository.findByGoalAndSubmissionDate(goal, LocalDate.now());
 
 		if (optionalCert.isPresent()) {
 			return GoalFindResponseDto.builder()
