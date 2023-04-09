@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carrot.habbit.dto.GoalCreateRequestDto;
+import com.carrot.habbit.dto.GoalCreateResponseDto;
 import com.carrot.habbit.dto.GoalFindResponseDto;
 import com.carrot.habbit.service.GoalService;
 
@@ -23,11 +24,10 @@ public class GoalController {
 	private final GoalService goalService;
 
 	@PostMapping
-	public ResponseEntity createGoal(
+	public ResponseEntity<GoalCreateResponseDto> createGoal(
 		@RequestBody GoalCreateRequestDto request
 	) {
-		goalService.createGoal(request);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).body(goalService.createGoal(request));
 	}
 
 	@GetMapping("/{goalId}")

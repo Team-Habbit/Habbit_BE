@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.carrot.habbit.dto.CertificatePhotoUrlRequestDto;
+import com.carrot.habbit.dto.CertificationCreateResponseDto;
+import com.carrot.habbit.dto.CertificationFindDaysResponseDto;
 import com.carrot.habbit.service.CertificationService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,23 +28,21 @@ public class CertificationController {
 	private final CertificationService certificationService;
 
 	@PostMapping("/uploads/{goalId}")
-	public ResponseEntity uploadFiles(
+	public ResponseEntity<CertificationCreateResponseDto> uploadFiles(
 		@RequestPart(value = "files") List<MultipartFile> multipartFiles, @PathVariable Long goalId) {
-		certificationService.createCertification(goalId, multipartFiles);
-		return new ResponseEntity(HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(certificationService.createCertification(goalId, multipartFiles));
 	}
 
 	@PostMapping("/{goalId}")
-	public ResponseEntity createCert(
+	public ResponseEntity<CertificationCreateResponseDto> createCert(
 		@PathVariable Long goalId) {
-		certificationService.createCertOnlyDate(goalId);
-		return new ResponseEntity(HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).body(certificationService.createCertOnlyDate(goalId));
 	}
 
 	@GetMapping("/{goalId}/days")
-	public ResponseEntity<List<String>> getDays(@PathVariable Long goalId) {
-		List<String> certifiedDays = certificationService.getCertifiedDays(goalId);
-		return ResponseEntity.ok().body(certifiedDays);
+	public ResponseEntity<CertificationFindDaysResponseDto> getDays(@PathVariable Long goalId) {
+		return ResponseEntity.ok().body(certificationService.getCertifiedDays(goalId));
 	}
 
 	@GetMapping("/find/photoLink")

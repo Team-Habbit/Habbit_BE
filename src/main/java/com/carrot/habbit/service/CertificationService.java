@@ -14,6 +14,8 @@ import com.carrot.habbit.domain.model.Certification;
 import com.carrot.habbit.domain.model.Goal;
 import com.carrot.habbit.domain.repository.CertificationRepository;
 import com.carrot.habbit.dto.CertificatePhotoUrlRequestDto;
+import com.carrot.habbit.dto.CertificationCreateResponseDto;
+import com.carrot.habbit.dto.CertificationFindDaysResponseDto;
 import com.carrot.habbit.dto.S3FileDto;
 import com.carrot.habbit.exception.certificate.AlreadyCertificationException;
 import com.carrot.habbit.exception.certificate.NotFoundCertificationException;
@@ -29,7 +31,7 @@ public class CertificationService {
 	private final FileUploadService fileUploadService;
 
 	@Transactional
-	public void createCertification(Long goalId, List<MultipartFile> multipartFiles) {
+	public CertificationCreateResponseDto createCertification(Long goalId, List<MultipartFile> multipartFiles) {
 		LocalDate now = LocalDate.now();
 		Optional<Certification> optionalCert = certificationRepository.findBySubmissionDate(now);
 		if (optionalCert.isPresent()) {
@@ -47,10 +49,13 @@ public class CertificationService {
 		goal.setGoalPercent(newPercent);
 
 		certificationRepository.save(certification);
+		return CertificationCreateResponseDto.builder()
+			.certificationId(certification.getId())
+			.build();
 	}
 
 	@Transactional
-	public void createCertOnlyDate(Long goalId) {
+	public CertificationCreateResponseDto createCertOnlyDate(Long goalId) {
 		LocalDate now = LocalDate.now();
 		Optional<Certification> optionalCert = certificationRepository.findBySubmissionDate(now);
 		if (optionalCert.isPresent()) {
@@ -64,12 +69,22 @@ public class CertificationService {
 		goal.setGoalPercent(newPercent);
 
 		certificationRepository.save(certification);
+		return CertificationCreateResponseDto.builder()
+			.certificationId(certification.getId())
+			.build();
 	}
 
-	public List<String> getCertifiedDays(Long goalId) {
+	public CertificationFindDaysResponseDto getCertifiedDays(Long goalId) {
 		Goal goal = goalService.findById(goalId);
 		List<Certification> certifications = certificationRepository.findAllByGoal(goal);
-		return certifications.stream().map(i -> localDateToString(i.getSubmissionDate())).collect(Collectors.toList());
+		return CertificationFindDaysResponseDto.builder()
+			.certDays(
+				certifications
+					.stream()
+					.map(i -> localDateToString(i.getSubmissionDate()))
+					.collect(Collectors.toList())
+			)
+			.build();
 	}
 
 	public String getPhotoLink(CertificatePhotoUrlRequestDto request) {

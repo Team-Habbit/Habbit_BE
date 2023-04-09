@@ -15,6 +15,7 @@ import com.carrot.habbit.domain.repository.CategoryRepository;
 import com.carrot.habbit.domain.repository.CertificationRepository;
 import com.carrot.habbit.domain.repository.GoalRepository;
 import com.carrot.habbit.dto.GoalCreateRequestDto;
+import com.carrot.habbit.dto.GoalCreateResponseDto;
 import com.carrot.habbit.dto.GoalFindResponseDto;
 import com.carrot.habbit.exception.goal.NotFoundCategoryException;
 import com.carrot.habbit.exception.goal.NotFoundGoalException;
@@ -29,7 +30,7 @@ public class GoalService {
 	private final CategoryRepository categoryRepository;
 	private final CertificationRepository certificationRepository;
 
-	public void createGoal(GoalCreateRequestDto request) {
+	public GoalCreateResponseDto createGoal(GoalCreateRequestDto request) {
 		Category category = categoryRepository.findByCategoryName(request.getCategoryName())
 			.orElseThrow(() -> new NotFoundCategoryException("카테고리 정보를 찾을 수 없습니다."));
 
@@ -43,6 +44,9 @@ public class GoalService {
 		Goal goal = Goal.of(category, startDate, endDate, betweenDays, request);
 
 		goalRepository.save(goal);
+		return GoalCreateResponseDto.builder()
+			.goalId(goal.getId())
+			.build();
 	}
 
 	public GoalFindResponseDto findGoal(Long goalId) {
