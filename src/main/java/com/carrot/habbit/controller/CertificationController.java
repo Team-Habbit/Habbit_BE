@@ -32,6 +32,13 @@ public class CertificationController {
 		return new ResponseEntity(HttpStatus.CREATED);
 	}
 
+	@PostMapping("/{goalId}")
+	public ResponseEntity createCert(
+		@PathVariable Long goalId) {
+		certificationService.createCertOnlyDate(goalId);
+		return new ResponseEntity(HttpStatus.CREATED);
+	}
+
 	@GetMapping("/{goalId}/days")
 	public ResponseEntity<List<String>> getDays(@PathVariable Long goalId) {
 		List<String> certifiedDays = certificationService.getCertifiedDays(goalId);

@@ -4,10 +4,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.carrot.habbit.domain.model.Category;
+import com.carrot.habbit.domain.model.Certification;
 import com.carrot.habbit.domain.model.Goal;
 import com.carrot.habbit.domain.repository.CategoryRepository;
 import com.carrot.habbit.domain.repository.CertificationRepository;
@@ -45,10 +47,22 @@ public class GoalService {
 
 	public GoalFindResponseDto findGoal(Long goalId) {
 		Goal goal = findById(goalId);
+		Optional<Certification> optionalCert = certificationRepository.findBySubmissionDate(LocalDate.now());
+
+		if (optionalCert.isPresent()) {
+			return GoalFindResponseDto.builder()
+				.goalName(goal.getGoalName())
+				.goalPercent(goal.getGoalPercent())
+				.weekCount(findByNowDateBetweenAWeek(goal))
+				.isCompleted(true)
+				.build();
+		}
+
 		return GoalFindResponseDto.builder()
 			.goalName(goal.getGoalName())
 			.goalPercent(goal.getGoalPercent())
 			.weekCount(findByNowDateBetweenAWeek(goal))
+			.isCompleted(false)
 			.build();
 	}
 

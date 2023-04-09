@@ -19,4 +19,6 @@ public class GoalFindResponseDto {
 	private double goalPercent;
 
 	private int weekCount;
+
+	private boolean isCompleted;
 }

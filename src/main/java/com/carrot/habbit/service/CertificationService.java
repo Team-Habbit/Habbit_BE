@@ -38,7 +38,6 @@ public class CertificationService {
 		Goal goal = goalService.findById(goalId);
 
 		List<S3FileDto> s3FileDtos = fileUploadService.uploadFiles(goal.getGoalName(), multipartFiles);
-
 		String uploadFileUrl = s3FileDtos.stream().findFirst().get().getUploadFileUrl();
 
 		Certification certification = Certification.of(goal, uploadFileUrl);
@@ -46,6 +45,24 @@ public class CertificationService {
 		goal.setCurrentCount(goal.getCurrentCount() + 1);
 		double newPercent = Math.round((double)goal.getCurrentCount() / goal.getGoalCount() * 100) / 100.0;
 		goal.setGoalPercent(newPercent);
+
+		certificationRepository.save(certification);
+	}
+
+	@Transactional
+	public void createCertOnlyDate(Long goalId) {
+		LocalDate now = LocalDate.now();
+		Optional<Certification> optionalCert = certificationRepository.findBySubmissionDate(now);
+		if (optionalCert.isPresent()) {
+			throw new AlreadyCertificationException("이미 등록한 목표가 존재합니다.");
+		}
+		Goal goal = goalService.findById(goalId);
+		Certification certification = Certification.of(goal, null);
+
+		goal.setCurrentCount(goal.getCurrentCount() + 1);
+		double newPercent = Math.round((double)goal.getCurrentCount() / goal.getGoalCount() * 100) / 100.0;
+		goal.setGoalPercent(newPercent);
+
 		certificationRepository.save(certification);
 	}
 
